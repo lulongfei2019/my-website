@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeTech 智能手表 - 官方网站</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0056b3',
+                        secondary: '#4a90e2',
+                        accent: '#00a0e9',
+                        dark: '#333333',
+                        light: '#f5f5f5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-transform {
+                transition-property: transform;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                transition-duration: 300ms;
+            }
+            .hover-scale:hover {
+                transform: scale(1.05);
+            }
+            .glass-effect {
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- 导航栏 -->
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <nav class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <img src="https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/448bf9cd83224b859a6a2dcc6df6b76b~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202604190845093B579372603240BC2D60&rrcfp=f06b921b&x-expires=1779151536&x-signature=znmQ0ECzo%2BOGDyHlJutMvLnnzQw%3D" alt="TimeTech Logo" class="h-10">
+                <span class="text-2xl font-bold text-primary">TimeTech</span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="text-gray-700 hover:text-primary transition-colors">首页</a>
+                <a href="#products" class="text-gray-700 hover:text-primary transition-colors">产品</a>
+                <a href="#features" class="text-gray-700 hover:text-primary transition-colors">功能</a>
+                <a href="#about" class="text-gray-700 hover:text-primary transition-colors">关于我们</a>
+                <a href="#contact" class="text-gray-700 hover:text-primary transition-colors">联系我们</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button id="cart-button" class="text-gray-700 hover:text-primary transition-colors">
+                        <i class="fa fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-primary transition-colors">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200 animate-fade-in">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#home" class="text-gray-700 hover:text-primary py-2 transition-colors">首页</a>
+                <a href="#products" class="text-gray-700 hover:text-primary py-2 transition-colors">产品</a>
+                <a href="#features" class="text-gray-700 hover:text-primary py-2 transition-colors">功能</a>
+                <a href="#about" class="text-gray-700 hover:text-primary py-2 transition-colors">关于我们</a>
+                <a href="#contact" class="text-gray-700 hover:text-primary py-2 transition-colors">联系我们</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 购物车侧边栏 -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+        <div class="p-4 h-full flex flex-col">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h2 class="text-xl font-bold">购物车</h2>
+                <button id="close-cart" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="cart-items" class="flex-grow py-4 overflow-y-auto">
+                <!-- 购物车为空状态 -->
+                <div id="empty-cart" class="flex flex-col items-center justify-center h-full">
+                    <i class="fa fa-shopping-cart text-gray-300 text-5xl mb-3"></i>
+                    <p class="text-gray-500">购物车还是空的</p>
+                    <button id="continue-shopping" class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-blue-700 transition-colors">
+                        继续购物
+                    </button>
+                </div>
+                
+                <!-- 购物车商品列表 -->
+                <div id="cart-list" class="hidden space-y-4">
+                    <!-- 购物车项目会动态添加到这里 -->
+                </div>
+            </div>
+            
+            <div id="cart-summary" class="border-t pt-3 hidden">
+                <div class="flex justify-between mb-2">
+                    <span>小计:</span>
+                    <span id="cart-subtotal" class="font-bold">¥0.00</span>
+                </div>
+                <button id="checkout-button" class="w-full bg-primary text-white py-2 rounded hover:bg-blue-700 transition-colors">
+                    结算
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 结账模态框 -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md mx-4 animate-fade-in">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">结账</h2>
+                    <button id="close-checkout" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="checkout-form">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700 mb-2">姓名</label>
+                        <input type="text" id="name" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 mb-2">邮箱</label>
+                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="address" class="block text-gray-700 mb-2">地址</label>
+                        <textarea id="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" required></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">支付方式</label>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <input type="radio" id="payment-alipay" name="payment" value="alipay" class="mr-2" checked>
+                                <label for="payment-alipay">支付宝</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="payment-wechat" name="payment" value="wechat" class="mr-2">
+                                <label for="payment-wechat">微信支付</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="payment-card" name="payment" value="card" class="mr-2">
+                                <label for="payment-card">信用卡</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-lg font-bold">总计:</span>
+                        <span id="checkout-total" class="text-lg font-bold">¥0.00</span>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-primary text-white py-3 rounded hover:bg-blue-700 transition-colors">
+                        完成订单
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单成功模态框 -->
+    <div id="order-success-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md mx-4 animate-fade-in">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa fa-check text-green-500 text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-bold mb-2">订单成功!</h2>
+                <p class="text-gray-600 mb-6">感谢您的购买，我们已收到您的订单。</p>
+                <button id="close-success" class="px-6 py-2 bg-primary text-white rounded hover:bg-blue-700 transition-colors">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="relative bg-gradient-to-r from-blue-500 to-blue-700 text-white py-16 md:py-24">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0 animate-slide-up">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-shadow">下一代智能手表</h1>
+                <p class="text-xl mb-6 text-blue-100">探索TimeTech智能手表的创新功能，提升您的生活品质。</p>
+                <div class="flex space-x-4">
+                    <a href="#products" class="px-6 py-3 bg-white text-primary font-medium rounded hover:bg-gray-100 transition-colors">
+                        立即购买
+                    </a>
+                    <a href="#features" class="px-6 py-3 border border-white text-white font-medium rounded hover:bg-white hover:bg-opacity-10 transition-colors">
+                        了解更多
+                    </a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center animate-fade-in">
+                <img src="https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/59dd78a7ab83461581d88e387ceb639f~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202604190845093B579372603240BC2D60&rrcfp=f06b921b&x-expires=1779151550&x-signature=Biv2KF9ouvm%2BIId5OK7Aik7ZDhw%3D" alt="TimeTech 智能手表" class="w-full max-w-md rounded-lg shadow-2xl">
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full h-auto">
+                <path fill="#f8fafc" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,202.7C672,203,768,181,864,181.3C960,181,1056,203,1152,202.7C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- 产品展示 -->
+    <section id="products" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">我们的产品</h2>
+                <p class="text-gray-600">探索TimeTech智能手表系列，找到最适合您的一款</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 产品1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                    <div class="relative overflow-hidden">
+                        <img src="https://p3-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/5dc8a546b309758073d559cdb059771b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=S9sRJrynaqW7EUkeheUyCH0jQCk%3D" alt="TimeTech Lite" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute top-4 right-4 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                            新品
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">TimeTech Lite</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-500 text-sm ml-2">(128 评价)</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">轻巧时尚的智能手表，适合日常佩戴和轻度运动。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-primary">¥599</span>
+                            <button class="add-to-cart px-4 py-2 bg-primary text-white rounded hover:bg-blue-700 transition-colors" data-id="1" data-name="TimeTech Lite" data-price="599" data-image="https://p3-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/5dc8a546b309758073d559cdb059771b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=S9sRJrynaqW7EUkeheUyCH0jQCk%3D">
+                                加入购物车
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 产品2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                    <div class="relative overflow-hidden">
+                        <img src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/720b7616af83c0293b6946f59ae9fc0b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=5w2s%2BlOspY5pQbpwsxh2N14%2BsHY%3D" alt="TimeTech Pro" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute top-4 right-4 bg-green-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                            热销
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">TimeTech Pro</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-500 text-sm ml-2">(256 评价)</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">专业级智能手表，配备全面健康监测和运动追踪功能。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-primary">¥999</span>
+                            <button class="add-to-cart px-4 py-2 bg-primary text-white rounded hover:bg-blue-700 transition-colors" data-id="2" data-name="TimeTech Pro" data-price="999" data-image="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/720b7616af83c0293b6946f59ae9fc0b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=5w2s%2BlOspY5pQbpwsxh2N14%2BsHY%3D">
+                                加入购物车
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 产品3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                    <div class="relative overflow-hidden">
+                        <img src="https://p11-doubao-search-sign.byteimg.com/isp-i18n-media/image/a7e8eb15cfe0f5fde3efeb52ba3bddb1~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=PAdIQY4t7eOKkHe03rA3Hv410mc%3D" alt="TimeTech Sport" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">TimeTech Sport</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-500 text-sm ml-2">(96 评价)</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">专为运动爱好者设计，防水防尘，超长续航。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-primary">¥799</span>
+                            <button class="add-to-cart px-4 py-2 bg-primary text-white rounded hover:bg-blue-700 transition-colors" data-id="3" data-name="TimeTech Sport" data-price="799" data-image="https://p11-doubao-search-sign.byteimg.com/isp-i18n-media/image/a7e8eb15cfe0f5fde3efeb52ba3bddb1~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=PAdIQY4t7eOKkHe03rA3Hv410mc%3D">
+                                加入购物车
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品详情 -->
+    <section id="product-detail" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="bg-gray-50 rounded-lg p-8 shadow-md">
+                <div class="flex flex-col lg:flex-row">
+                    <!-- 产品图片 -->
+                    <div class="lg:w-1/2 mb-8 lg:mb-0">
+                        <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                            <img id="detail-image" src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/720b7616af83c0293b6946f59ae9fc0b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=5w2s%2BlOspY5pQbpwsxh2N14%2BsHY%3D" alt="TimeTech Pro" class="w-full h-auto">
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 mt-4">
+                            <div class="cursor-pointer border-2 border-primary rounded overflow-hidden">
+                                <img src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/720b7616af83c0293b6946f59ae9fc0b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=5w2s%2BlOspY5pQbpwsxh2N14%2BsHY%3D" alt="TimeTech Pro - 正面" class="w-full h-auto detail-thumbnail" data-img="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/720b7616af83c0293b6946f59ae9fc0b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=5w2s%2BlOspY5pQbpwsxh2N14%2BsHY%3D">
+                            </div>
+                            <div class="cursor-pointer border-2 border-transparent hover:border-primary rounded overflow-hidden">
+                                <img src="https://p26-doubao-search-sign.byteimg.com/pgc-image/7e171861440a4bdbbbfdd6274fcfc525~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111520&x-signature=29lMhXgU%2Fcc94EzDTBh4BS9GFs8%3D" alt="TimeTech Pro - 佩戴效果" class="w-full h-auto detail-thumbnail" data-img="https://p26-doubao-search-sign.byteimg.com/pgc-image/7e171861440a4bdbbbfdd6274fcfc525~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111520&x-signature=29lMhXgU%2Fcc94EzDTBh4BS9GFs8%3D">
+                            </div>
+                            <div class="cursor-pointer border-2 border-transparent hover:border-primary rounded overflow-hidden">
+                                <img src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/04a279cbfdd85102c041b097315f4591~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=2fy0ywUqBf8539koPzejZptn5P8%3D" alt="TimeTech Pro - 侧面" class="w-full h-auto detail-thumbnail" data-img="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/04a279cbfdd85102c041b097315f4591~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=2fy0ywUqBf8539koPzejZptn5P8%3D">
+                            </div>
+                            <div class="cursor-pointer border-2 border-transparent hover:border-primary rounded overflow-hidden">
+                                <img src="https://p3-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/1117906294159179842~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111520&x-signature=CbjCrq1RzHqiv3YQ1iKFD7UOb2c%3D" alt="TimeTech Pro - 功能展示" class="w-full h-auto detail-thumbnail" data-img="https://p3-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/1117906294159179842~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111520&x-signature=CbjCrq1RzHqiv3YQ1iKFD7UOb2c%3D">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 产品信息 -->
+                    <div class="lg:w-1/2 lg:pl-8">
+                        <h2 class="text-3xl font-bold mb-2">TimeTech Pro</h2>
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-500 text-sm ml-2">(256 评价)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-primary mb-6">¥999</p>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-2">产品描述</h3>
+                            <p class="text-gray-700 mb-4">
+                                TimeTech Pro 是我们的旗舰智能手表，配备1.4英寸AMOLED高清显示屏，支持心率监测、血氧检测、睡眠分析等全面健康功能。内置30种运动模式，50米防水设计，满足您的各种运动需求。
+                            </p>
+                            <p class="text-gray-700">
+                                电池续航长达14天，支持无线充电，兼容iOS和Android设备。采用航空级铝合金表壳和蓝宝石玻璃镜面，坚固耐用且时尚美观。
+                            </p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-2">颜色选择</h3>
+                            <div class="flex space-x-3">
+                                <button class="w-8 h-8 rounded-full bg-blue-600 border-2 border-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 color-option active" data-color="蓝色"></button>
+                                <button class="w-8 h-8 rounded-full bg-gray-800 border-2 border-white shadow-md focus:outline-none focus:ring-2 focus:ring-gray-500 color-option" data-color="黑色"></button>
+                                <button class="w-8 h-8 rounded-full bg-pink-400 border-2 border-white shadow-md focus:outline-none focus:ring-2 focus:ring-pink-500 color-option" data-color="粉色"></button>
+                                <button class="w-8 h-8 rounded-full bg-green-600 border-2 border-white shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 color-option" data-color="绿色"></button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-2">数量</h3>
+                            <div class="flex items-center">
+                                <button id="decrease-quantity" class="w-10 h-10 bg-gray-200 rounded-l flex items-center justify-center hover:bg-gray-300 transition-colors">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                                <input type="number" id="quantity" class="w-16 h-10 border-t border-b border-gray-200 text-center focus:outline-none" value="1" min="1">
+                                <button id="increase-quantity" class="w-10 h-10 bg-gray-200 rounded-r flex items-center justify-center hover:bg-gray-300 transition-colors">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                                <span class="ml-4 text-gray-500">库存: 100</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <button id="detail-add-to-cart" class="px-8 py-3 bg-primary text-white font-medium rounded hover:bg-blue-700 transition-colors flex items-center">
+                                <i class="fa fa-shopping-cart mr-2"></i> 加入购物车
+                            </button>
+                            <button id="buy-now" class="px-8 py-3 bg-red-600 text-white font-medium rounded hover:bg-red-700 transition-colors">
+                                立即购买
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 产品规格 -->
+                <div class="mt-12">
+                    <div class="border-b border-gray-200">
+                        <div class="flex">
+                            <button class="product-tab px-6 py-3 font-medium border-b-2 border-primary text-primary" data-tab="specs">
+                                技术规格
+                            </button>
+                            <button class="product-tab px-6 py-3 font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="features">
+                                主要功能
+                            </button>
+                            <button class="product-tab px-6 py-3 font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="reviews">
+                                用户评价
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="py-6">
+                        <div id="specs-content" class="tab-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-3">基本信息</h4>
+                                    <table class="w-full">
+                                        <tbody>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">显示屏</td>
+                                                <td class="py-2 font-medium">1.4英寸 AMOLED 高清触控屏</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">表壳材质</td>
+                                                <td class="py-2 font-medium">航空级铝合金</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">镜面材质</td>
+                                                <td class="py-2 font-medium">蓝宝石玻璃</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">表带材质</td>
+                                                <td class="py-2 font-medium">硅胶/皮革可选</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">防水等级</td>
+                                                <td class="py-2 font-medium">50米防水</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-3">技术参数</h4>
+                                    <table class="w-full">
+                                        <tbody>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">处理器</td>
+                                                <td class="py-2 font-medium">双核 1.1GHz</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">内存</td>
+                                                <td class="py-2 font-medium">1GB RAM</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">存储</td>
+                                                <td class="py-2 font-medium">16GB ROM</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">电池容量</td>
+                                                <td class="py-2 font-medium">420mAh</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 text-gray-600">续航时间</td>
+                                                <td class="py-2 font-medium">最长14天</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="features-content" class="tab-content hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-primary text-3xl mb-3">
+                                        <i class="fa fa-heartbeat"></i>
+                                    </div>
+                                    <h4 class="text-lg font-semibold mb-2">健康监测</h4>
+                                    <p class="text-gray-600">24小时心率监测、血氧检测、睡眠分析、压力监测</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-primary text-3xl mb-3">
+                                        <i class="fa fa-bolt"></i>
+                                    </div>
+                                    <h4 class="text-lg font-semibold mb-2">运动模式</h4>
+                                    <p class="text-gray-600">30种运动模式，包括跑步、游泳、骑行、瑜伽等</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-primary text-3xl mb-3">
+                                        <i class="fa fa-bell"></i>
+                                    </div>
+                                    <h4 class="text-lg font-semibold mb-2">智能提醒</h4>
+                                    <p class="text-gray-600">来电、短信、邮件提醒，支持第三方应用通知</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-primary text-3xl mb-3">
+                                        <i class="fa fa-tachometer"></i>
+                                    </div>
+                                    <h4 class="text-lg font-semibold mb-2">实时数据</h4>
+                                    <p class="text-gray-600">实时显示步数、卡路里、距离、活动时间等数据</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-primary text-3xl mb-3">
+                                        <i class="fa fa-bluetooth"></i>
+                                    </div>
+                                    <h4 class="text-lg font-semibold mb-2">无线连接</h4>
+                                    <p class="text-gray-600">蓝牙5.0、Wi-Fi、NFC支付功能</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-primary text-3xl mb-3">
+                                        <i class="fa fa-cloud"></i>
+                                    </div>
+                                    <h4 class="text-lg font-semibold mb-2">云同步</h4>
+                                    <p class="text-gray-600">支持数据云备份，多设备同步</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="reviews-content" class="tab-content hidden">
+                            <div class="mb-6">
+                                <div class="flex items-center mb-2">
+                                    <div class="text-5xl font-bold text-primary mr-3">4.9</div>
+                                    <div>
+                                        <div class="flex text-yellow-400 mb-1">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                        <div class="text-sm text-gray-500">基于256条评价</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center mb-1">
+                                    <div class="w-24 text-sm">5星</div>
+                                    <div class="flex-grow bg-gray-200 rounded-full h-2 mr-2">
+                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 85%"></div>
+                                    </div>
+                                    <div class="w-8 text-sm text-gray-500">85%</div>
+                                </div>
+                                <div class="flex items-center mb-1">
+                                    <div class="w-24 text-sm">4星</div>
+                                    <div class="flex-grow bg-gray-200 rounded-full h-2 mr-2">
+                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 10%"></div>
+                                    </div>
+                                    <div class="w-8 text-sm text-gray-500">10%</div>
+                                </div>
+                                <div class="flex items-center mb-1">
+                                    <div class="w-24 text-sm">3星</div>
+                                    <div class="flex-grow bg-gray-200 rounded-full h-2 mr-2">
+                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 3%"></div>
+                                    </div>
+                                    <div class="w-8 text-sm text-gray-500">3%</div>
+                                </div>
+                                <div class="flex items-center mb-1">
+                                    <div class="w-24 text-sm">2星</div>
+                                    <div class="flex-grow bg-gray-200 rounded-full h-2 mr-2">
+                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 1%"></div>
+                                    </div>
+                                    <div class="w-8 text-sm text-gray-500">1%</div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-24 text-sm">1星</div>
+                                    <div class="flex-grow bg-gray-200 rounded-full h-2 mr-2">
+                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 1%"></div>
+                                    </div>
+                                    <div class="w-8 text-sm text-gray-500">1%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div class="border-b border-gray-200 pb-6">
+                                    <div class="flex justify-between mb-2">
+                                        <div class="font-medium">张先生</div>
+                                        <div class="text-sm text-gray-500">2023-05-15</div>
+                                    </div>
+                                    <div class="flex text-yellow-400 mb-2">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </div>
+                                    <p class="text-gray-700">这款智能手表超出了我的期望，功能非常全面，电池续航也很给力，一周多才充一次电。心率监测和睡眠分析功能非常准确，运动模式也很丰富，非常适合我这种运动爱好者。</p>
+                                </div>
+                                
+                                <div class="border-b border-gray-200 pb-6">
+                                    <div class="flex justify-between mb-2">
+                                        <div class="font-medium">李女士</div>
+                                        <div class="text-sm text-gray-500">2023-05-10</div>
+                                    </div>
+                                    <div class="flex text-yellow-400 mb-2">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star-half-o"></i>
+                                    </div>
+                                    <p class="text-gray-700">外观设计很漂亮，粉色款很适合女性。功能方面也很强大，特别是血氧检测功能对我来说很实用。唯一的小缺点是表带有点硬，希望以后能改进。总体来说还是很满意的购买。</p>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <div class="font-medium">王先生</div>
+                                        <div class="text-sm text-gray-500">2023-05-05</div>
+                                    </div>
+                                    <div class="flex text-yellow-400 mb-2">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </div>
+                                    <p class="text-gray-700">作为一个科技爱好者，我对这款手表的性能非常满意。处理器速度快，系统流畅，没有卡顿现象。各种传感器的精度也很高，数据准确。APP的用户体验也很好，数据同步快速稳定。值得推荐！</p>
+                                </div>
+                            </div>
+                            
+                            <button class="mt-6 px-6 py-2 border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors">
+                                查看更多评价
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能特点 -->
+    <section id="features" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">功能特点</h2>
+                <p class="text-gray-600">探索TimeTech智能手表的创新功能，提升您的生活品质</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md hover-scale transition-transform">
+                    <div class="text-primary text-4xl mb-4">
+                        <i class="fa fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">全面健康监测</h3>
+                    <p class="text-gray-600">24小时心率监测、血氧检测、睡眠分析、压力监测，全方位关注您的健康状况。</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md hover-scale transition-transform">
+                    <div class="text-primary text-4xl mb-4">
+                        <i class="fa fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">多种运动模式</h3>
+                    <p class="text-gray-600">内置30种运动模式，包括跑步、游泳、骑行、瑜伽等，满足您的各种运动需求。</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md hover-scale transition-transform">
+                    <div class="text-primary text-4xl mb-4">
+                        <i class="fa fa-tachometer"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">实时数据追踪</h3>
+                    <p class="text-gray-600">实时显示步数、卡路里、距离、活动时间等数据，帮助您更好地了解自己的运动情况。</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md hover-scale transition-transform">
+                    <div class="text-primary text-4xl mb-4">
+                        <i class="fa fa-bell"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">智能提醒</h3>
+                    <p class="text-gray-600">来电、短信、邮件提醒，支持第三方应用通知，让您不错过任何重要信息。</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md hover-scale transition-transform">
+                    <div class="text-primary text-4xl mb-4">
+                        <i class="fa fa-battery-three-quarters"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">超长续航</h3>
+                    <p class="text-gray-600">电池续航长达14天，支持无线充电，让您无需频繁充电，使用更加便捷。</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md hover-scale transition-transform">
+                    <div class="text-primary text-4xl mb-4">
+                        <i class="fa fa-tint"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">50米防水</h3>
+                    <p class="text-gray-600">50米防水设计，支持游泳和日常淋浴使用，无需担心进水问题。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI产品描述生成器 -->
+    <section id="ai-generator" class="py-16 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">AI产品描述生成器</h2>
+                <p class="text-blue-100">输入产品关键词，AI将为您生成专业的产品描述</p>
+            </div>
+            
+            <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8 text-gray-800">
+                <div class="mb-6">
+                    <label for="product-keywords" class="block text-gray-700 mb-2 font-medium">产品关键词</label>
+                    <input type="text" id="product-keywords" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" placeholder="例如：智能手表、健康监测、运动追踪">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="product-features" class="block text-gray-700 mb-2 font-medium">产品特点（可选）</label>
+                    <textarea id="product-features" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" placeholder="列出产品的主要特点和优势，每行一个特点"></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2 font-medium">描述风格</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="flex items-center">
+                            <input type="radio" id="style-professional" name="description-style" value="professional" class="mr-2" checked>
+                            <label for="style-professional">专业商务</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="style-friendly" name="description-style" value="friendly" class="mr-2">
+                            <label for="style-friendly">亲切友好</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="style-technical" name="description-style" value="technical" class="mr-2">
+                            <label for="style-technical">技术详细</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="generate-description" class="w-full bg-primary text-white py-3 rounded hover:bg-blue-700 transition-colors flex items-center justify-center">
+                    <i class="fa fa-magic mr-2"></i> 生成产品描述
+                </button>
+                
+                <div id="generated-description" class="mt-6 hidden">
+                    <div class="border-t border-gray-200 pt-4">
+                        <h3 class="text-lg font-semibold mb-2">生成的产品描述</h3>
+                        <div id="description-output" class="bg-gray-50 p-4 rounded border border-gray-200 min-h-[100px]"></div>
+                        <div class="flex justify-end mt-3">
+                            <button id="copy-description" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors flex items-center">
+                                <i class="fa fa-copy mr-2"></i> 复制
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">关于TimeTech</h2>
+                <p class="text-gray-600">我们致力于打造高品质的智能穿戴设备，提升人们的生活品质</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                    <h3 class="text-2xl font-bold mb-4">我们的使命</h3>
+                    <p class="text-gray-700 mb-4">
+                        TimeTech成立于2018年，是一家专注于智能穿戴设备研发和生产的科技公司。我们的使命是通过创新科技，帮助人们更好地了解自己的健康状况，养成健康的生活习惯。
+                    </p>
+                    <p class="text-gray-700 mb-4">
+                        我们拥有一支由行业专家组成的研发团队，不断探索新技术，为用户提供高品质、高性能的智能穿戴设备。我们的产品不仅注重功能的全面性，更注重用户体验的舒适性和便捷性。
+                    </p>
+                    <p class="text-gray-700">
+                        未来，TimeTech将继续致力于智能穿戴设备的研发和创新，为用户带来更多高品质的产品，助力人们实现健康生活。
+                    </p>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://p3-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/1117906294159179842~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111520&x-signature=CbjCrq1RzHqiv3YQ1iKFD7UOb2c%3D" alt="关于TimeTech" class="w-full rounded-lg shadow-lg">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-primary mb-2">50+</div>
+                    <p class="text-gray-600">专利技术</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-primary mb-2">100万+</div>
+                    <p class="text-gray-600">全球用户</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-primary mb-2">20+</div>
+                    <p class="text-gray-600">国家和地区</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section id="contact" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">联系我们</h2>
+                <p class="text-gray-600">如果您有任何问题或建议，请随时与我们联系</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                    <form id="contact-form">
+                        <div class="mb-4">
+                            <label for="contact-name" class="block text-gray-700 mb-2">姓名</label>
+                            <input type="text" id="contact-name" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="contact-email" class="block text-gray-700 mb-2">邮箱</label>
+                            <input type="email" id="contact-email" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="contact-subject" class="block text-gray-700 mb-2">主题</label>
+                            <input type="text" id="contact-subject" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="contact-message" class="block text-gray-700 mb-2">消息</label>
+                            <textarea id="contact-message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded hover:bg-blue-700 transition-colors">
+                            发送消息
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="md:w-1/2">
+                    <div class="bg-white p-6 rounded-lg shadow-md h-full">
+                        <h3 class="text-xl font-bold mb-4">联系方式</h3>
+                        
+                        <div class="flex items-start mb-4">
+                            <div class="text-primary text-xl mt-1 mr-4">
+                                <i class="fa fa-map-marker"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">地址</h4>
+                                <p class="text-gray-600">北京市海淀区中关村科技园区8号楼</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-4">
+                            <div class="text-primary text-xl mt-1 mr-4">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">电话</h4>
+                                <p class="text-gray-600">400-123-4567</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-4">
+                            <div class="text-primary text-xl mt-1 mr-4">
+                                <i class="fa fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">邮箱</h4>
+                                <p class="text-gray-600">info@timetech.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-6">
+                            <div class="text-primary text-xl mt-1 mr-4">
+                                <i class="fa fa-clock-o"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">工作时间</h4>
+                                <p class="text-gray-600">周一至周五: 9:00 - 18:00</p>
+                                <p class="text-gray-600">周六至周日: 休息</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="font-medium mb-3">关注我们</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-blue-400 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition-colors">
+                                    <i class="fa fa-youtube-play"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-blue-800 text-white rounded-full flex items-center justify-center hover:bg-blue-900 transition-colors">
+                                    <i class="fa fa-linkedin"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/448bf9cd83224b859a6a2dcc6df6b76b~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202604190845093B579372603240BC2D60&rrcfp=f06b921b&x-expires=1779151536&x-signature=znmQ0ECzo%2BOGDyHlJutMvLnnzQw%3D" alt="TimeTech Logo" class="h-8">
+                        <span class="text-xl font-bold">TimeTech</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        TimeTech致力于打造高品质的智能穿戴设备，提升人们的生活品质。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#products" class="text-gray-400 hover:text-white transition-colors">产品</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">功能</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">客户服务</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">常见问题</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">配送信息</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">退换政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">使用条款</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">订阅我们</h3>
+                    <p class="text-gray-400 mb-4">
+                        订阅我们的电子邮件，获取最新产品信息和优惠活动。
+                    </p>
+                    <form id="subscribe-form" class="flex">
+                        <input type="email" placeholder="您的邮箱地址" class="px-4 py-2 w-full rounded-l focus:outline-none text-gray-800">
+                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-r hover:bg-blue-700 transition-colors">
+                            订阅
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                    &copy; 2023 TimeTech. 保留所有权利。
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">隐私政策</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">使用条款</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Cookie政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-6 right-6 bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300 z-40">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 购物车功能
+            const cart = {
+                items: [],
+                
+                // 添加商品到购物车
+                addItem(id, name, price, image, quantity = 1) {
+                    const existingItem = this.items.find(item => item.id === id);
+                    
+                    if (existingItem) {
+                        existingItem.quantity += quantity;
+                    } else {
+                        this.items.push({
+                            id,
+                            name,
+                            price,
+                            image,
+                            quantity
+                        });
+                    }
+                    
+                    this.updateCartUI();
+                    this.saveCart();
+                },
+                
+                // 从购物车移除商品
+                removeItem(id) {
+                    this.items = this.items.filter(item => item.id !== id);
+                    this.updateCartUI();
+                    this.saveCart();
+                },
+                
+                // 更新商品数量
+                updateQuantity(id, quantity) {
+                    const item = this.items.find(item => item.id === id);
+                    if (item) {
+                        item.quantity = Math.max(1, quantity);
+                        this.updateCartUI();
+                        this.saveCart();
+                    }
+                },
+                
+                // 计算购物车总价
+                getTotal() {
+                    return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+                },
+                
+                // 获取购物车商品数量
+                getItemCount() {
+                    return this.items.reduce((count, item) => count + item.quantity, 0);
+                },
+                
+                // 更新购物车UI
+                updateCartUI() {
+                    const cartCount = document.getElementById('cart-count');
+                    const cartList = document.getElementById('cart-list');
+                    const emptyCart = document.getElementById('empty-cart');
+                    const cartSummary = document.getElementById('cart-summary');
+                    const cartSubtotal = document.getElementById('cart-subtotal');
+                    const checkoutTotal = document.getElementById('checkout-total');
+                    
+                    // 更新购物车数量标记
+                    cartCount.textContent = this.getItemCount();
+                    
+                    // 更新购物车列表
+                    if (this.items.length === 0) {
+                        cartList.classList.add('hidden');
+                        emptyCart.classList.remove('hidden');
+                        cartSummary.classList.add('hidden');
+                    } else {
+                        cartList.classList.remove('hidden');
+                        emptyCart.classList.add('hidden');
+                        cartSummary.classList.remove('hidden');
+                        
+                        // 清空购物车列表
+                        cartList.innerHTML = '';
+                        
+                        // 添加购物车商品
+                        this.items.forEach(item => {
+                            const cartItem = document.createElement('div');
+                            cartItem.className = 'flex items-start border-b border-gray-200 pb-4';
+                            cartItem.innerHTML = `
+                                <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded mr-3">
+                                <div class="flex-grow">
+                                    <h4 class="font-medium">${item.name}</h4>
+                                    <div class="flex items-center mt-1">
+                                        <button class="decrease-quantity w-6 h-6 bg-gray-200 rounded flex items-center justify-center hover:bg-gray-300 transition-colors" data-id="${item.id}">
+                                            <i class="fa fa-minus text-xs"></i>
+                                        </button>
+                                        <span class="mx-2">${item.quantity}</span>
+                                        <button class="increase-quantity w-6 h-6 bg-gray-200 rounded flex items-center justify-center hover:bg-gray-300 transition-colors" data-id="${item.id}">
+                                            <i class="fa fa-plus text-xs"></i>
+                                        </button>
+                                        <span class="ml-auto font-medium">¥${(item.price * item.quantity).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                                <button class="remove-item text-gray-400 hover:text-red-500 ml-2" data-id="${item.id}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            `;
+                            cartList.appendChild(cartItem);
+                        });
+                        
+                        // 更新小计
+                        cartSubtotal.textContent = `¥${this.getTotal().toFixed(2)}`;
+                        checkoutTotal.textContent = `¥${this.getTotal().toFixed(2)}`;
+                        
+                        // 添加事件监听器
+                        document.querySelectorAll('.decrease-quantity').forEach(button => {
+                            button.addEventListener('click', () => {
+                                const id = button.dataset.id;
+                                const item = this.items.find(item => item.id === id);
+                                if (item && item.quantity > 1) {
+                                    this.updateQuantity(id, item.quantity - 1);
+                                }
+                            });
+                        });
+                        
+                        document.querySelectorAll('.increase-quantity').forEach(button => {
+                            button.addEventListener('click', () => {
+                                const id = button.dataset.id;
+                                const item = this.items.find(item => item.id === id);
+                                if (item) {
+                                    this.updateQuantity(id, item.quantity + 1);
+                                }
+                            });
+                        });
+                        
+                        document.querySelectorAll('.remove-item').forEach(button => {
+                            button.addEventListener('click', () => {
+                                const id = button.dataset.id;
+                                this.removeItem(id);
+                            });
+                        });
+                    }
+                },
+                
+                // 保存购物车到本地存储
+                saveCart() {
+                    localStorage.setItem('cart', JSON.stringify(this.items));
+                },
+                
+                // 从本地存储加载购物车
+                loadCart() {
+                    const savedCart = localStorage.getItem('cart');
+                    if (savedCart) {
+                        this.items = JSON.parse(savedCart);
+                        this.updateCartUI();
+                    }
+                },
+                
+                // 清空购物车
+                clearCart() {
+                    this.items = [];
+                    this.updateCartUI();
+                    this.saveCart();
+                }
+            };
+            
+            // 加载购物车
+            cart.loadCart();
+            
+            // 移动端菜单
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // 购物车侧边栏
+            const cartButton = document.getElementById('cart-button');
+            const cartSidebar = document.getElementById('cart-sidebar');
+            const closeCart = document.getElementById('close-cart');
+            const continueShopping = document.getElementById('continue-shopping');
+            
+            cartButton.addEventListener('click', () => {
+                cartSidebar.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeCart.addEventListener('click', () => {
+                cartSidebar.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+            });
+            
+            continueShopping.addEventListener('click', () => {
+                cartSidebar.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+            });
+            
+            // 结账模态框
+            const checkoutButton = document.getElementById('checkout-button');
+            const checkoutModal = document.getElementById('checkout-modal');
+            const closeCheckout = document.getElementById('close-checkout');
+            const checkoutForm = document.getElementById('checkout-form');
+            const orderSuccessModal = document.getElementById('order-success-modal');
+            const closeSuccess = document.getElementById('close-success');
+            
+            checkoutButton.addEventListener('click', () => {
+                cartSidebar.classList.add('translate-x-full');
+                checkoutModal.classList.remove('hidden');
+            });
+            
+            closeCheckout.addEventListener('click', () => {
+                checkoutModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                checkoutModal.classList.add('hidden');
+                orderSuccessModal.classList.remove('hidden');
+                cart.clearCart();
+            });
+            
+            closeSuccess.addEventListener('click', () => {
+                orderSuccessModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            // 产品详情页
+            const detailAddToCart = document.getElementById('detail-add-to-cart');
+            const buyNow = document.getElementById('buy-now');
+            const quantityInput = document.getElementById('quantity');
+            const decreaseQuantity = document.getElementById('decrease-quantity');
+            const increaseQuantity = document.getElementById('increase-quantity');
+            
+            detailAddToCart.addEventListener('click', () => {
+                const quantity = parseInt(quantityInput.value);
+                cart.addItem('2', 'TimeTech Pro', 999, 'https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/720b7616af83c0293b6946f59ae9fc0b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=5w2s%2BlOspY5pQbpwsxh2N14%2BsHY%3D', quantity);
+                
+                // 显示添加成功提示
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 animate-fade-in';
+                toast.textContent = '商品已成功添加到购物车！';
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            });
+            
+            buyNow.addEventListener('click', () => {
+                const quantity = parseInt(quantityInput.value);
+                cart.addItem('2', 'TimeTech Pro', 999, 'https://p11-doubao-search-sign.byteimg.com/tos-cn-i-xv4ileqgde/720b7616af83c0293b6946f59ae9fc0b~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1792111519&x-signature=5w2s%2BlOspY5pQbpwsxh2N14%2BsHY%3D', quantity);
+                checkoutModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            decreaseQuantity.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+            
+            increaseQuantity.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+            
+            // 产品图片切换
+            const thumbnails = document.querySelectorAll('.detail-thumbnail');
+            const detailImage = document.getElementById('detail-image');
+            
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', () => {
+                    // 更新主图
+                    detailImage.src = thumbnail.dataset.img;
+                    
+                    // 更新缩略图边框
+                    thumbnails.forEach(thumb => {
+                        thumb.parentElement.classList.remove('border-primary');
+                        thumb.parentElement.classList.add('border-transparent');
+                    });
+                    thumbnail.parentElement.classList.remove('border-transparent');
+                    thumbnail.parentElement.classList.add('border-primary');
+                });
+            });
+            
+            // 产品选项卡
+            const productTabs = document.querySelectorAll('.product-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            productTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.dataset.tab;
+                    
+                    // 更新选项卡样式
+                    productTabs.forEach(t => {
+                        t.classList.remove('border-primary', 'text-primary');
+                        t.classList.add('border-transparent', 'text-gray-500');
+                    });
+                    tab.classList.remove('border-transparent', 'text-gray-500');
+                    tab.classList.add('border-primary', 'text-primary');
+                    
+                    // 显示对应内容
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                });
+            });
+            
+            // 颜色选择
+            const colorOptions = document.querySelectorAll('.color-option');
+            
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    colorOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                });
+            });
+            
+            // AI产品描述生成器
+            const generateDescription = document.getElementById('generate-description');
+            const productKeywords = document.getElementById('product-keywords');
+            const productFeatures = document.getElementById('product-features');
+            const descriptionStyle = document.getElementsByName('description-style');
+            const generatedDescription = document.getElementById('generated-description');
+            const descriptionOutput = document.getElementById('description-output');
+            const copyDescription = document.getElementById('copy-description');
+            
+            generateDescription.addEventListener('click', () => {
+                const keywords = productKeywords.value.trim();
+                if (!keywords) {
+                    alert('请输入产品关键词');
+                    return;
+                }
+                
+                // 获取选中的风格
+                let style = 'professional';
+                for (const radio of descriptionStyle) {
+                    if (radio.checked) {
+                        style = radio.value;
+                        break;
+                    }
+                }
+                
+                // 获取产品特点
+                const features = productFeatures.value.trim()
+                    ? productFeatures.value.trim().split('\n').filter(f => f.trim())
+                    : [];
+                
+                // 生成产品描述
+                let description = '';
+                
+                if (style === 'professional') {
+                    description = `【${keywords}】\n\n${keywords}是一款专业级产品，采用先进技术和优质材料精心打造。${features.length > 0 ? '其核心优势包括：' + features.join('、') + '。' : ''}该产品设计精美，性能卓越，为用户提供无与伦比的使用体验。\n\n无论是日常使用还是专业应用，${keywords}都能满足您的各种需求。我们致力于为客户提供高品质的产品和服务，${keywords}正是我们理念的完美体现。\n\n立即购买${keywords}，开启智能生活新篇章！`;
+                } else if (style === 'friendly') {
+                    description = `嘿，朋友！\n\n想了解一下${keywords}吗？这可是我们的明星产品哦！${features.length > 0 ? '它有好多令人惊喜的功能：' + features.join('、') + '，简直太棒了！' : ''}\n\n${keywords}不仅好用，而且特别容易上手。不管你是科技达人还是新手小白，都能轻松驾驭它。我们的设计团队特别注重用户体验，让每一次使用都充满乐趣。\n\n快来试试${keywords}吧，相信你一定会爱上它的！有任何问题，随时来找我们聊天哦～`;
+                } else if (style === 'technical') {
+                    description = `【技术规格详解：${keywords}】\n\n${keywords}采用业界领先的技术规格，具体参数如下：\n\n1. 核心处理器：高性能多核处理器，主频高达2.0GHz，确保系统运行流畅稳定。\n2. 显示技术：${features.includes('高清屏幕') ? '4K超高清分辨率，100% sRGB色域覆盖，亮度高达600尼特' : '高分辨率显示屏，色彩还原度高，可视角度广'}。\n3. 电池续航：大容量电池设计，${features.includes('长续航') ? '最长可达72小时的连续使用时间' : '满足日常使用需求'}。\n4. 连接能力：支持最新的蓝牙5.2、Wi-Fi 6等无线连接技术，数据传输速度快，稳定性强。\n${features.length > 0 ? '\n5. 特色功能：' + features.join('、') + '。' : ''}\n\n${keywords}通过了多项严格的质量测试和认证，确保在各种环境下都能稳定可靠地工作。我们提供详细的技术文档和专业的技术支持，让您充分发挥产品的潜力。`;
+                }
+                
+                // 显示生成的描述
+                descriptionOutput.textContent = description;
+                generatedDescription.classList.remove('hidden');
+            });
+            
+            copyDescription.addEventListener('click', () => {
+                const text = descriptionOutput.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    copyDescription.innerHTML = '<i class="fa fa-check mr-2"></i> 已复制';
+                    setTimeout(() => {
+                        copyDescription.innerHTML = '<i class="fa fa-copy mr-2"></i> 复制';
+                    }, 2000);
+                });
+            });
+            
+            // 联系表单
+            const contactForm = document.getElementById('contact-form');
+            
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // 显示提交成功提示
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 animate-fade-in';
+                toast.textContent = '消息已成功发送！我们会尽快回复您。';
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+                
+                // 重置表单
+                contactForm.reset();
+            });
+            
+            // 订阅表单
+            const subscribeForm = document.getElementById('subscribe-form');
+            
+            subscribeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // 显示订阅成功提示
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 animate-fade-in';
+                toast.textContent = '订阅成功！感谢您的关注。';
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+                
+                // 重置表单
+                subscribeForm.reset();
+            });
+            
+            // 返回顶部按钮
+            const backToTopButton = document.getElementById('back-to-top');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.remove('opacity-0', 'invisible');
+                    backToTopButton.classList.add('opacity-100', 'visible');
+                } else {
+                    backToTopButton.classList.remove('opacity-100', 'visible');
+                    backToTopButton.classList.add('opacity-0', 'invisible');
+                }
+            });
+            
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // 关闭移动菜单
+                        mobileMenu.classList.add('hidden');
+                        
+                        // 关闭购物车侧边栏
+                        cartSidebar.classList.add('translate-x-full');
+                        
+                        // 滚动到目标位置
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                        
+                        // 更新URL
+                        history.pushState(null, null, targetId);
+                    }
+                });
+            });
+            
+            // 添加到购物车按钮
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+                    const name = button.dataset.name;
+                    const price = parseFloat(button.dataset.price);
+                    const image = button.dataset.image;
+                    
+                    cart.addItem(id, name, price, image);
+                    
+                    // 显示添加成功提示
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 animate-fade-in';
+                    toast.textContent = '商品已成功添加到购物车！';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
